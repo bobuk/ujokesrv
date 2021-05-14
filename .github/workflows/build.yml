@@ -1,0 +1,28 @@
+name: build
+
+on:
+  push:
+    branches:
+    tags:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: build and deploy master image to ghcr.io and dockerhub
+        env:
+          GITHUB_PACKAGE_TOKEN: ${{ secrets.PKG_TOKEN }}
+          USERNAME: ${{ github.actor }}
+        run: |
+          echo ${GITHUB_PACKAGE_TOKEN} | docker login ghcr.io -u ${USERNAME} --password-stdin
+          docker buildx build --push \
+              --platform linux/amd64 \
+              -t ghcr.io/${USERNAME}/ujokesrv:latest .
