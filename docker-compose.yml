@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+  ujokesrv:
+    build: .
+    image: ghcr.io/bobuk/ujokesrv:latest
+    restart: always
+    ports:
+      - "8081:8081"
