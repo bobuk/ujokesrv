@@ -10,7 +10,7 @@ except ModuleNotFoundError:
     import json  # type: ignore
 
 JokeType = Dict[str, List[Dict[str, str]]]
-JOKES: JokeType = {"нет": []}
+JOKES: JokeType = {"default": []}
 
 
 class JsonError(Exception):
@@ -35,7 +35,7 @@ def load_jokes(
             if "jokes" not in data or type(data["jokes"]) is not list:
                 raise JsonError("`jokes` must be a list of joke objects")
 
-            category = data["category"] if "category" in data else "нет"
+            category = data["category"] if "category" in data else "default"
             author = data["author"] if "author" in data else None
 
             for joke in data["jokes"]:
