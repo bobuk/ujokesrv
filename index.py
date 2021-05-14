@@ -5,6 +5,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from jokeson import load_jokes
 import random
+import uvicorn
 
 JOKES = load_jokes("jokes")
 
@@ -27,6 +28,4 @@ app = Starlette(
 )
 
 if __name__ == "__main__":
-    import uvicorn
-
     uvicorn.run("index:app", host="0.0.0.0", port=8081, log_level="info")
