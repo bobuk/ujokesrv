@@ -16,13 +16,17 @@ RUN .venv/bin/poetry install --no-root --no-dev
 ##############################################################
 
 FROM python:3.9-slim AS runtime-image
+RUN groupadd --gid 2000 py && useradd --uid 2000 --gid py --shell /bin/bash --create-home py
 
-COPY --from=compile-image /app /app
-COPY --from=compile-image /app/.venv /app/
 
-RUN mkdir /app/jokes/
-COPY *.py /app/
-COPY jokes/*.json /app/jokes/
+COPY --from=compile-image --chown=py:py /app /app
+COPY --from=compile-image --chown=py:py /app/.venv /app/
+
+RUN mkdir -m 777 /app/jokes/
+COPY --chown=py:py *.py /app/
+COPY  --chown=py:py jokes/*.json /app/jokes/
+
+USER py
 
 WORKDIR /app
 ENTRYPOINT ["/app/.venv/bin/python3"]
