@@ -1,8 +1,6 @@
 FROM python:3.9-slim as compile-image
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends gcc build-essential
-
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -m 777 /app
 COPY pyproject.toml poetry.lock /app/
