@@ -23,8 +23,19 @@ async def joke_request(request):
     )
 
 
+async def categories_request(request):
+    categories = list(JOKES.keys())
+    del categories[0]
+    return JSONResponse(categories)
+
+
 app = Starlette(
-    debug=True, routes=[Route("/", joke_request), Route("/{category}", joke_request)]
+    debug=True,
+    routes=[
+        Route("/", joke_request),
+        Route("/categories", categories_request),
+        Route("/{category}", joke_request),
+    ],
 )
 
 if __name__ == "__main__":
