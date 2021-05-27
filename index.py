@@ -5,7 +5,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from jokeson import load_jokes
 import random
-import uvicorn
+import uvicorn  # type: ignore
 
 JOKES = load_jokes("jokes")
 
