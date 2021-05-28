@@ -23,6 +23,6 @@ jobs:
           USERNAME: ${{ github.actor }}
         run: |
           echo ${GITHUB_PACKAGE_TOKEN} | docker login ghcr.io -u ${USERNAME} --password-stdin
-          docker buildx build --push \
+          docker buildx build --progress=plain --push \
               --platform linux/amd64 \
               -t ghcr.io/${USERNAME}/ujokesrv:latest .
