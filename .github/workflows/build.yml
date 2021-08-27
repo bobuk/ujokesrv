@@ -1,10 +1,10 @@
 name: build
 
+
 on:
   push:
     branches:
-    tags:
-  pull_request:
+      - "master"
 
 jobs:
   build:
@@ -17,12 +17,32 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: build and deploy master image to ghcr.io and dockerhub
-        env:
-          GITHUB_PACKAGE_TOKEN: ${{ secrets.PKG_TOKEN }}
-          USERNAME: ${{ github.actor }}
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GHC
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PKG_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ghcr.io/${{ github.actor }}/ujokesrv:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
         run: |
-          echo ${GITHUB_PACKAGE_TOKEN} | docker login ghcr.io -u ${USERNAME} --password-stdin
-          docker buildx build --progress=plain --push \
-              --platform linux/amd64 \
-              -t ghcr.io/${USERNAME}/ujokesrv:latest .
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
