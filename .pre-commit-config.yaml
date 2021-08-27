@@ -25,7 +25,7 @@ repos:
     rev: v0.910
     hooks:
     -   id: mypy
-
+        additional_dependencies: [types-ujson]
 
 
 default_language_version:
