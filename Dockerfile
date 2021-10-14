@@ -1,4 +1,4 @@
-FROM python:3.9-slim as compile-image
+FROM python:3.10-slim as compile-image
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
 
@@ -13,7 +13,7 @@ RUN .venv/bin/poetry install --no-root --no-dev
 
 ##############################################################
 
-FROM python:3.9-slim AS runtime-image
+FROM python:3.10-slim AS runtime-image
 RUN groupadd --gid 2000 py && useradd --uid 2000 --gid py --shell /bin/bash --create-home py
 
 
