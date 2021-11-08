@@ -8,6 +8,7 @@ import random
 import uvicorn  # type: ignore
 
 JOKES = load_jokes("jokes")
+[random.shuffle(JOKES[category]) for category in JOKES]
 
 
 def error(err: str, code: int) -> JSONResponse:
@@ -16,10 +17,15 @@ def error(err: str, code: int) -> JSONResponse:
 
 async def joke_request(request):
     category = request.path_params.get("category", "oneliner")
-    if category not in JOKES or not JOKES[category]:
-        return error(f"category {category} not found or empty", 404)
+    if category not in JOKES:
+        return error(f"category {category} not found", 404)
+    if not JOKES[category]:
+        TEMP_JOKES = load_jokes("jokes")
+        random.shuffle(TEMP_JOKES[category])
+        JOKES[category] = TEMP_JOKES[category]
+        del TEMP_JOKES
     return JSONResponse(
-        {"category": category, "content": random.choice(JOKES[category])["text"]}
+        {"category": category, "content": (JOKES[category].pop())["text"]}
     )
 
 
