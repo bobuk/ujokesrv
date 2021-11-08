@@ -9,7 +9,7 @@ import uvicorn  # type: ignore
 
 JOKES = load_jokes("jokes")
 for category in JOKES:
-    random.shuffle(JOKES[category]) 
+    random.shuffle(JOKES[category])
 
 
 def error(err: str, code: int) -> JSONResponse:
