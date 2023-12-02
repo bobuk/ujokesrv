@@ -3,13 +3,13 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -m 777 /app
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml poetry.toml poetry.lock /app/
 WORKDIR /app
-
-RUN python -m venv .venv && .venv/bin/pip install --upgrade pip
-RUN .venv/bin/pip install poetry
-RUN .venv/bin/poetry update
-RUN .venv/bin/poetry install --no-root --no-dev
+RUN python -m pip install --upgrade pip
+RUN pip install poetry
+RUN python -m venv .venv
+RUN poetry update
+RUN poetry install --no-root --no-dev
 
 ##############################################################
 
