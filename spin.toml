@@ -1,0 +1,17 @@
+spin_manifest_version = 2
+
+[application]
+authors = ["bobuk <bobuk@rubedo.cloud>"]
+description = "JokeSRV"
+name = "jokesrv"
+version = "0.1.0"
+
+[[trigger.http]]
+route = "/..."
+component = "jokesrv"
+
+[component.jokesrv]
+source = "app.wasm"
+[component.jokesrv.build]
+command = "python jokeson.py; spin py2wasm index -o app.wasm"
+watch = ["index.py", "parsed.py"]
