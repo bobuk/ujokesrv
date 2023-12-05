@@ -2,12 +2,7 @@
 import pathlib
 from typing import Dict, List, Optional, Union
 from copy import copy
-
-
-try:
-    import ujson as json
-except ModuleNotFoundError:
-    import json  # type: ignore
+import json
 
 JokeType = Dict[str, List[Dict[str, str]]]
 JOKES: JokeType = {"default": []}
@@ -54,4 +49,11 @@ def load_jokes(
 
 if __name__ == "__main__":
     jokes = load_jokes("jokes")
-    print(jokes)
+    with open("parsed.py", "w") as fl:
+        fl.write(
+            "JOKES = "
+            + json.dumps(jokes, ensure_ascii=False, indent=4).replace(
+                ": null", ": None"
+            )
+            + "\n"
+        )

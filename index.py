@@ -1,43 +1,49 @@
-#!/usr/bin/env python3
-
-from starlette.applications import Starlette
-from starlette.responses import JSONResponse
-from starlette.routing import Route
-from jokeson import load_jokes
+import json
 import random
-import uvicorn  # type: ignore
+import time
 
-JOKES = load_jokes("jokes")
-class JR(JSONResponse):
-    media_type = "application/json; charset=utf-8"
-
-def error(err: str, code: int) -> JR:
-    return JR({"error": err}, status_code=code)
+from spin_http import Response
+from parsed import JOKES
 
 
-async def joke_request(request):
-    category = request.path_params.get("category", "oneliner")
-    if category not in JOKES or not JOKES[category]:
-        return error(f"category {category} not found or empty", 404)
-    return JR(
-        {"category": category, "content": random.choice(JOKES[category])["text"]}
+def resp(text: dict | list, code: int = 200) -> Response:
+    return Response(
+        code,
+        {"content-type": "application/json; charset=utf-8"},
+        bytes(json.dumps(text, ensure_ascii=False), "utf-8"),
     )
 
 
-async def categories_request(request):
+def error(err: str, code: int) -> Response:
+    return resp({"error": err}, code)
+
+
+def joke_request(category):
+    return {
+        "category": category,
+        "content": random.choice(JOKES[category])["text"],
+        # "size": len(JOKES[category]),
+    }
+
+
+def categories_request():
     categories = list(JOKES.keys())
     del categories[0]
-    return JR(categories)
+    return categories
 
 
-app = Starlette(
-    debug=True,
-    routes=[
-        Route("/", joke_request),
-        Route("/categories", categories_request),
-        Route("/{category}", joke_request),
-    ],
-)
+categories = categories_request()
 
-if __name__ == "__main__":
-    uvicorn.run("index:app", host="0.0.0.0", port=8081, log_level="info")
+
+def handle_request(request) -> Response:
+    random.seed(int(time.time() * 1000))
+    uri = request.uri[1:] if request.uri.startswith("/") else request.uri
+    if "?" in uri:
+        uri = uri.split("?")[0]
+    if uri == "categories":
+        return resp(categories, 200)
+    if uri in categories:
+        return resp(joke_request(uri), 200)
+    elif len(uri) > 0:
+        return error(f"database {uri} is not found (yet)", 404)
+    return resp(joke_request("oneliner"), 200)
