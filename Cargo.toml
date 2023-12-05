@@ -1,0 +1,21 @@
+[package]
+name = "jokesrv-rust"
+authors = ["bobuk <bobuk@rubedo.cloud>"]
+description = ""
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = [ "cdylib" ]
+
+[dependencies]
+anyhow = "1"
+http = "*"
+spin-sdk = { git = "https://github.com/fermyon/spin"}
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
+walkdir = "*"
+rand = "*"
+
+
+[workspace]
