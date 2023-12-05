@@ -4,14 +4,17 @@ spin_manifest_version = 2
 authors = ["bobuk <bobuk@rubedo.cloud>"]
 description = "JokeSRV"
 name = "jokesrv"
-version = "0.1.0"
+version = "0.2.0"
 
 [[trigger.http]]
 route = "/..."
 component = "jokesrv"
 
 [component.jokesrv]
-source = "app.wasm"
+source = "target/wasm32-wasi/release/jokesrv_rust.wasm"
+allowed_outbound_hosts = []
+files = ["jokes"]
+
 [component.jokesrv.build]
-command = "python jokeson.py; spin py2wasm index -o app.wasm"
-watch = ["index.py", "parsed.py"]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
