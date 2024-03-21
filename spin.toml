@@ -1,0 +1,20 @@
+spin_manifest_version = 2
+
+[application]
+authors = ["bobuk <bobuk@rubedo.cloud>"]
+description = "JokeSRV"
+name = "jokesrv"
+version = "0.2.0"
+
+[[trigger.http]]
+route = "/..."
+component = "jokesrv"
+
+[component.jokesrv]
+source = "target/wasm32-wasi/release/jokesrv_rust.wasm"
+allowed_outbound_hosts = []
+files = ["jokes"]
+
+[component.jokesrv.build]
+command = "cargo build --target wasm32-wasi --release"
+watch = ["src/**/*.rs", "Cargo.toml"]
